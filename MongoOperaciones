@@ -1,0 +1,575 @@
+package pevalMongo;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Scanner;
+
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+
+/**
+ * Clase MongoOperaciones, donde se recogen los métodos para operar con la bd de
+ * MongoDB y sus colecciones y documentos
+ * 
+ * @author Jesús Romero González
+ * @version 01/12/2018
+ * @see MongoConexion
+ */
+public class MongoOperaciones {
+	private static Scanner sc = new Scanner(System.in);
+	/** cur <DBCursor> cursor MongoDB */
+	private static DBCursor cur;
+	/** mongo <MongoConexion> instancia de la clase MongoConexion */
+	private static MongoConexion mongo;
+
+	/**
+	 * Constructor
+	 * 
+	 * @param m <MongoConexion>
+	 */
+	public MongoOperaciones(MongoConexion m) {
+		mongo = m;
+	}
+
+	/**
+	 * Método menu, que recoge y devuelve un string introducido por teclado
+	 * 
+	 * @return opcion <String>
+	 */
+	public String menu() {
+		String opcion = "";
+
+		System.out.println("\n\t**MENU PRINCIPAL**\n");
+		System.out.println("\t[1]...INSERTAR CALIFICACION\n");
+		System.out.println("\t[2]...CONSULTA CALIFICACIONES\n");
+		System.out.println("\t[3]...ACTUALIZAR REGISTRO\n");
+		System.out.println("\t[4]...BORRAR REGISTRO\n");
+		System.out.println("\t[0]...SALIR\n");
+		System.out.print("\t--> ");
+		opcion = sc.nextLine();
+
+		return opcion;
+	}
+
+	/**
+	 * Método cargarColecciones, donde creamos y rellenamos colecciones de forma
+	 * automática
+	 */
+	public void cargarColecciones() {
+		BasicDBObject documento = new BasicDBObject();
+		DBCollection coleccion;
+		cur = null;
+
+		/** creación colección cursus */
+		coleccion = mongo.abrirColeccion("cursos");
+		documento.put("cod_curso", "1");
+		documento.put("descripcion", "dam");
+		coleccion.insert(documento);
+		documento.clear();
+		documento.put("cod_curso", "2");
+		documento.put("descripcion", "daw");
+		coleccion.insert(documento);
+		documento.clear();
+		cur = coleccion.find();
+		/** imprimir documentos */
+		while (cur.hasNext()) {
+			System.out.println("\t\t--> COD_CURSO: " + cur.next().get("cod_curso") + " | DESCRIPCION: "
+					+ cur.curr().get("descripcion"));
+		}
+
+		/* creación colección alumnos */
+		coleccion = mongo.abrirColeccion("alumnos");
+		documento.put("dni", "26810168b");
+		documento.put("nombre", "richard");
+		documento.put("apellidos", "stallman");
+		documento.put("cod_curso", "1");
+		coleccion.insert(documento);
+		documento.clear();
+		documento.put("dni", "12345678k");
+		documento.put("nombre", "dennis");
+		documento.put("apellidos", "ritchie");
+		documento.put("cod_curso", "1");
+		coleccion.insert(documento);
+		documento.clear();
+		documento.put("dni", "98765432f");
+		documento.put("nombre", "larry");
+		documento.put("apellidos", "page");
+		documento.put("cod_curso", "1");
+		coleccion.insert(documento);
+		documento.clear();
+		documento.put("dni", "15926748g");
+		documento.put("nombre", "linus");
+		documento.put("apellidos", "torvalds");
+		documento.put("cod_curso", "2");
+		coleccion.insert(documento);
+		documento.clear();
+		documento.put("dni", "68442671p");
+		documento.put("nombre", "ada");
+		documento.put("apellidos", "lovelace");
+		documento.put("cod_curso", "2");
+		coleccion.insert(documento);
+		documento.clear();
+		cur = coleccion.find();
+		/** imprimir documentos */
+		while (cur.hasNext()) {
+			System.out.println("\t\t--> DNI: " + cur.next().get("dni") + " | NOMBRE: " + cur.curr().get("nombre")
+					+ " | APELLIDOS: " + cur.curr().get("apellidos") + " | COD_CURSO: " + cur.curr().get("cod_curso"));
+		}
+
+		/* creación colección asignaturas */
+		coleccion = mongo.abrirColeccion("asignaturas");
+		documento.put("cod_asig", "psp");
+		documento.put("descripcion", "programacion de servicios");
+		documento.put("cod_curso", "1");
+		coleccion.insert(documento);
+		documento.clear();
+		documento.put("cod_asig", "dein");
+		documento.put("descripcion", "desarrollo de interfaces");
+		documento.put("cod_curso", "1");
+		coleccion.insert(documento);
+		documento.clear();
+		documento.put("cod_asig", "lema");
+		documento.put("descripcion", "lenguaje de marcas");
+		documento.put("cod_curso", "2");
+		coleccion.insert(documento);
+		documento.clear();
+		documento.put("cod_asig", "bada");
+		documento.put("descripcion", "bases de datos");
+		documento.put("cod_curso", "2");
+		coleccion.insert(documento);
+		documento.clear();
+		cur = coleccion.find();
+		/** imprimir documentos */
+		while (cur.hasNext()) {
+			System.out.println("\t\t--> COD_ASIG: " + cur.next().get("cod_asig") + " | DESCRIPCION: "
+					+ cur.curr().get("descripcion") + " | COD_CURSO: " + cur.curr().get("cod_curso"));
+		}
+
+		/* creación colección calificaciones */
+		coleccion = mongo.abrirColeccion("calificaciones");
+		documento.put("cod_asig", "psp");
+		documento.put("dni", "26810168b");
+		documento.put("calificacion", 7);
+		coleccion.insert(documento);
+		documento.clear();
+		documento.put("cod_asig", "bada");
+		documento.put("dni", "26810168b");
+		documento.put("calificacion", 4);
+		coleccion.insert(documento);
+		documento.clear();
+		documento.put("cod_asig", "dein");
+		documento.put("dni", "12345678k");
+		documento.put("calificacion", 8);
+		coleccion.insert(documento);
+		documento.clear();
+		documento.put("cod_asig", "lema");
+		documento.put("dni", "12345678k");
+		documento.put("calificacion", 5);
+		coleccion.insert(documento);
+		documento.clear();
+		documento.put("cod_asig", "lema");
+		documento.put("dni", "98765432f");
+		documento.put("calificacion", 6);
+		coleccion.insert(documento);
+		documento.clear();
+		documento.put("cod_asig", "psp");
+		documento.put("dni", "98765432f");
+		documento.put("calificacion", 3);
+		coleccion.insert(documento);
+		documento.clear();
+		documento.put("cod_asig", "bada");
+		documento.put("dni", "68442671p");
+		documento.put("calificacion", 10);
+		coleccion.insert(documento);
+		documento.clear();
+		documento.put("cod_asig", "dein");
+		documento.put("dni", "68442671p");
+		documento.put("calificacion", 10);
+		coleccion.insert(documento);
+		documento.clear();
+		cur = coleccion.find();
+		/** imprimir documentos */
+		while (cur.hasNext()) {
+			System.out.println("\t\t--> COD_ASIG: " + cur.next().get("cod_asig") + " | DNI: " + cur.curr().get("dni")
+					+ " | CALIFICACION: " + cur.curr().get("calificacion"));
+		}
+	}
+
+	/**
+	 * Método actualizarRegistros, donde cambiamos la nota de un alumno y asignatura
+	 * en concreto
+	 */
+	public void actualizarRegistros() {
+		/** obtenemos la coleccion 'calificaciones' */
+		DBCollection coleccion = mongo.getDb().getCollection("calificaciones");
+		/** objeto que contendrá la query con la nueva nota */
+		BasicDBObject update = new BasicDBObject();
+		/** objeto qye contendrá la query con el dni y la asignatura buscada */
+		BasicDBObject searchById = new BasicDBObject();
+		/** lista que almacenará el dni y la asignatura introducida por teclado */
+		ArrayList<String> lista = new ArrayList<>();
+		/** check que el dni exista */
+		String dni = consultarAlumno();
+		while (dni.equals("")) {
+			dni = consultarAlumno();
+		}
+		lista.add(dni);
+		/** check que la asignatura exista */
+		String asig = consultarAsignatura(1);
+		while (asig.equals("")) {
+			asig = consultarAsignatura(1);
+		}
+		lista.add(asig);
+		/** establacemos la nueva nota */
+		System.out.print("\nIntroduce nueva nota: ");
+		int nota = sc.nextInt();
+		/** definimos la qyery con el set de la nueva nota */
+		update.append("$set", new BasicDBObject().append("calificacion", nota));
+		/** definimos la query con la select del dni y asignartura */
+		searchById.append("cod_asig", lista.get(1)).append("dni", lista.get(0));
+		/**
+		 * si se ha actualizado correctamente mostramos la colección 'calificaciones',
+		 * si no mostramos mensaje de error
+		 */
+		if (coleccion.updateMulti(searchById, update) != null) {
+			System.out.println("\n\t**REGISTROS ACTUALIZADOS**\n");
+			consultaCalificaciones();
+		} else {
+			System.out.println("\n\t**LA CONSULTA DEVOLVIÓ 0 REGISTROS**\n");
+		}
+	}
+
+	/**
+	 * Método borrarRegistros, donde borramos una calificación de un alumno y
+	 * asignatura en concreto
+	 */
+	public void borrarRegistros() {
+		/** obtenemos la coleccion 'calificaciones' */
+		DBCollection coleccion = mongo.getDb().getCollection("calificaciones");
+		/** query con la select del dni y la asignatura */
+		BasicDBObject query = new BasicDBObject();
+		/** lista que almacenará el dni y la asignatura introducida por teclado */
+		ArrayList<String> lista = new ArrayList<>();
+		/** check que el dni exista */
+		String dni = consultarAlumno();
+		while (dni.equals("")) {
+			dni = consultarAlumno();
+		}
+		lista.add(dni);
+		/** check que la asignatura exista */
+		String asig = consultarAsignatura(1);
+		while (asig.equals("")) {
+			asig = consultarAsignatura(1);
+		}
+		lista.add(asig);
+		query.append("cod_asig", lista.get(1)).append("dni", lista.get(0));
+		/**
+		 * si se haborrado correctamente mostramos la colección 'calificaciones', si no
+		 * mostramos mensaje de error
+		 */
+		if (coleccion.remove(query) != null) {
+			System.out.println("\n\t**REGISTROS ACTUALIZADOS**\n");
+			consultaCalificaciones();
+		} else {
+			System.out.println("\t**LA CONSULTA DEVOLVIÓ 0 REGISTROS**\n");
+		}
+	}
+
+	/**
+	 * Método consultarAlumno, donde buscamos un alumno y retornamos su dni
+	 * 
+	 * @return dni <String>
+	 */
+	public String consultarAlumno() {
+		cur = null;
+		String dni = null;
+		/** objeto que contendrá la query con el nombre a buscar */
+		BasicDBObject query = new BasicDBObject();
+		/** obtenemos la colección 'alumnos' */
+		DBCollection coleccion = mongo.getDb().getCollection("alumnos");
+		System.out.print("\nIntroduce nombre del alumno: ");
+		String nombre = sc.nextLine();
+		/** definimos la query con la select del nombre del alumno */
+		query.put("nombre", nombre);
+		cur = coleccion.find(query);
+		/** recogemos los registros obtenidos */
+		while (cur.hasNext()) {
+			String aux = cur.next().get("cod_asig") + "" + cur.curr().get("dni") + "" + cur.curr().get("calificacion");
+		}
+		try {
+			/** recogemos el dni */
+			dni = cur.curr().get("dni").toString();
+		} catch (Exception e) {
+//			e.printStackTrace();
+			System.out.println("\n\t**ALUMNO NO ENCOTRADO**");
+			dni = "";
+		}
+		query.clear();
+		return dni;
+	}
+
+	/**
+	 * Método consultarAsignatura, donde buscamos una asignatura por su descripción
+	 * y retornamos su código
+	 * 
+	 * @return asig <String>
+	 */
+	public static String consultarAsignatura(int opcion) {
+		String asig = null;
+		cur = null;
+		/** objeto que contendrá la query con la asignatura a buscar */
+		BasicDBObject query = new BasicDBObject();
+		/** obtenemos la colección 'asignaturas' */
+		DBCollection coleccion = mongo.getDb().getCollection("asignaturas");
+		switch (opcion) {
+		case 1:
+			System.out.print("\nIntroduce nombre de la asignatura: ");
+			String desc = sc.nextLine();
+			/** definimos la query con la select de la descripción de la asignatura */
+			query.put("descripcion", desc);
+			break;
+		case 2:
+			System.out.print("\nIntroduce el código de la asignatura: ");
+			String cod = sc.nextLine();
+			/** definimos la query con la select de la descripción de la asignatura */
+			query.put("cod_asig", cod);
+			break;
+		}
+		cur = coleccion.find(query);
+		/** recogemos los registros obtenidos */
+		while (cur.hasNext()) {
+			String aux = cur.next().get("cod_asig") + "" + cur.curr().get("descripcion") + ""
+					+ cur.curr().get("cod_curso");
+		}
+		try {
+			/** recogemos el código */
+			asig = cur.curr().get("cod_asig").toString();
+		} catch (Exception e) {
+//			e.printStackTrace();
+			System.out.println("\n\t**ASIGNATURA NO ENCOTRADA**");
+			asig = "";
+		}
+		query.clear();
+		return asig;
+	}
+
+	/**
+	 * Método consultarCalificaciones, donde mostramos la colección 'calificaciones'
+	 */
+	public static void consultaCalificaciones() {
+		cur = null;
+		/** obtenemos la colección 'calificaciones' */
+		DBCollection coleccion = mongo.getDb().getCollection("calificaciones");
+		DBCursor cur = coleccion.find();
+		/** mostramos los documentos */
+		while (cur.hasNext()) {
+			System.out.println("\n--> COD_ASIG: " + cur.next().get("cod_asig") + " | DNI: " + cur.curr().get("dni")
+					+ " | CALIFICACION: " + cur.curr().get("calificacion"));
+		}
+	}
+
+	/**
+	 * Método busquedaAsignatura, donde buscamos una nota con distintos parámetros
+	 * de comparación
+	 */
+	public void busquedaAsignatura() {
+		String parametro = null;
+		int nota;
+		String[] operadores = { "=", "<>", ">=", "<=", ">", "<" };
+		/** objeto que contendrá la query con la select de la nota */
+		BasicDBObject query = new BasicDBObject();
+		/** obtenemos la colección 'calificaciones' */
+		DBCollection coleccion = mongo.getDb().getCollection("calificaciones");
+		cur = null;
+		/** establecemos el parámetro de comparación */
+		System.out.println("\n\t**CONSULTA CALIFICACIONES**");
+		System.out.println("\nEstablece el parámetro de búsqueda [=][<>][>=][<=][>][<]");
+		System.out.print("--> ");
+		parametro = sc.nextLine();
+		/** check que el parámetro introducido sea correcto */
+		while (!Arrays.asList(operadores).contains(parametro)) {
+			System.out.println("\t**ERROR**");
+			System.out.println("\nEstablece el parámetro de búsqueda [=][<>][>=][<=][>][<]");
+			System.out.print("--> ");
+			parametro = sc.nextLine();
+		}
+		/** introducimos la nota */
+		System.out.print("Introduce nota: ");
+		nota = sc.nextInt();
+		/** creamos la query en función del parámetro de comparación introducido */
+		switch (parametro) {
+		case "=":
+			query.put("calificacion", nota);
+			cur = coleccion.find(query);
+			if (!cur.hasNext()) {
+				System.out.println("\n\t**LA CONSULTA DEVOLVIÓ 0 REGISTROS**");
+			} else {
+				while (cur.hasNext()) {
+					System.out.println("\n--> COD_ASIG: " + cur.next().get("cod_asig") + " | DNI: "
+							+ cur.curr().get("dni") + " | CALIFICACION: " + cur.curr().get("calificacion"));
+				}
+			}
+			query.clear();
+			break;
+		case "<>":
+			query.put("calificacion", new BasicDBObject("$ne", nota));
+			cur = coleccion.find(query);
+			if (!cur.hasNext()) {
+				System.out.println("\n\t**LA CONSULTA DEVOLVIÓ 0 REGISTROS**");
+			} else {
+				while (cur.hasNext()) {
+					System.out.println("\n--> COD_ASIG: " + cur.next().get("cod_asig") + " | DNI: "
+							+ cur.curr().get("dni") + " | CALIFICACION: " + cur.curr().get("calificacion"));
+				}
+			}
+			break;
+		case ">=":
+			query.put("calificacion", new BasicDBObject("$gte", nota));
+			cur = coleccion.find(query);
+			if (!cur.hasNext()) {
+				System.out.println("\n\t**LA CONSULTA DEVOLVIÓ 0 REGISTROS**");
+			} else {
+				while (cur.hasNext()) {
+					System.out.println("\n--> COD_ASIG: " + cur.next().get("cod_asig") + " | DNI: "
+							+ cur.curr().get("dni") + " | CALIFICACION: " + cur.curr().get("calificacion"));
+				}
+			}
+			break;
+		case "<=":
+			query.put("calificacion", new BasicDBObject("$lte", nota));
+			cur = coleccion.find(query);
+			if (!cur.hasNext()) {
+				System.out.println("\n\t**LA CONSULTA DEVOLVIÓ 0 REGISTROS**");
+			} else {
+				while (cur.hasNext()) {
+					System.out.println("\n--> COD_ASIG: " + cur.next().get("cod_asig") + " | DNI: "
+							+ cur.curr().get("dni") + " | CALIFICACION: " + cur.curr().get("calificacion"));
+				}
+			}
+			break;
+		case ">":
+			query.put("calificacion", new BasicDBObject("$gt", nota));
+			cur = coleccion.find(query);
+			if (!cur.hasNext()) {
+				System.out.println("\n\t**LA CONSULTA DEVOLVIÓ 0 REGISTROS**");
+			} else {
+				while (cur.hasNext()) {
+					System.out.println("\n--> COD_ASIG: " + cur.next().get("cod_asig") + " | DNI: "
+							+ cur.curr().get("dni") + " | CALIFICACION: " + cur.curr().get("calificacion"));
+				}
+			}
+			break;
+		case "<":
+			query.put("calificacion", new BasicDBObject("$lt", nota));
+			cur = coleccion.find(query);
+			if (!cur.hasNext()) {
+				System.out.println("\n\t**LA CONSULTA DEVOLVIÓ 0 REGISTROS**");
+			} else {
+				while (cur.hasNext()) {
+					System.out.println("\n--> COD_ASIG: " + cur.next().get("cod_asig") + " | DNI: "
+							+ cur.curr().get("dni") + " | CALIFICACION: " + cur.curr().get("calificacion"));
+				}
+			}
+			break;
+		}
+	}
+
+	/**
+	 * Método introducirCalificaciones, donde introducimos un nuevo documento en la
+	 * colección 'calificaciones' si el alumno o la asignatura no existiesen, los
+	 * creamos
+	 */
+	public void introducirCalificación() {
+		/** objeto que contendrá el nuevo documento a introducir */
+		BasicDBObject documento = new BasicDBObject();
+		/** nueva colección */
+		DBCollection coleccion;
+		/** array donde almacenaremos los nuevos campos del documento */
+		ArrayList<String> string = new ArrayList<>();
+		cur = null;
+		/** consultamos la asignatura introducida */
+		String cod = consultarAsignatura(2);
+		/** si no existe, añadimos un nuevo documento a la colección 'asignaturas' */
+		while (cod.equals("")) {
+			System.out.print("\nLa asignatura no existe, ¿desea crearla? s | n: ");
+			String respuesta = sc.nextLine();
+			if (respuesta.equals("s")) {
+				System.out.print("\nIntroduce código de la asignatura: ");
+				string.add(sc.nextLine());
+				System.out.print("\nIntroduce descripción: ");
+				string.add(sc.nextLine());
+				System.out.print("\nIntroduce código del curso: ");
+				string.add(sc.nextLine());
+				/** añadimos el nuevo documento y mostramos el contenido de la colección */
+				coleccion = mongo.abrirColeccion("asignaturas");
+				documento.put("cod_asig", string.get(0));
+				documento.put("descripcion", string.get(1));
+				documento.put("cod_curso", string.get(2));
+				coleccion.insert(documento);
+				documento.clear();
+				cur = coleccion.find();
+				/** imprimir documentos */
+				while (cur.hasNext()) {
+					System.out.println("\t\t--> COD_ASIG: " + cur.next().get("cod_asig") + " | DESCRIPCION: "
+							+ cur.curr().get("descripcion") + " | COD_CURSO: " + cur.curr().get("cod_curso"));
+				}
+			}
+			cod = consultarAsignatura(2);
+		}
+
+		cur = null;
+		string.removeAll(string);
+		/** consultamos el dni introducido */
+		String dni = consultarAlumno();
+		/** si no existe, añadimos un nuevo documento a la colección 'alumnos' */
+		while (dni.equals("")) {
+			System.out.print("\nEl alumno no existe, ¿desea crearlo? s | n: ");
+			String respuesta = sc.nextLine();
+			if (respuesta.equals("s")) {
+				System.out.print("\nIntroduce el dni: ");
+				string.add(sc.nextLine());
+				System.out.print("\nIntroduce el nombre: ");
+				string.add(sc.nextLine());
+				System.out.print("\nIntroduce los apellidos: ");
+				string.add(sc.nextLine());
+				System.out.print("\nIntroduce el código del curso: ");
+				string.add(sc.nextLine());
+				/** añadimos el nuevo documento y mostramos el contenido de la colección */
+				coleccion = mongo.abrirColeccion("alumnos");
+				documento.put("dni", string.get(0));
+				documento.put("nombre", string.get(1));
+				documento.put("apellidos", string.get(2));
+				documento.put("cod_curso", string.get(3));
+				coleccion.insert(documento);
+				documento.clear();
+				cur = coleccion.find();
+				/** imprimir documentos */
+				while (cur.hasNext()) {
+					System.out.println("\t\t--> DNI: " + cur.next().get("dni") + " | NOMBRE: "
+							+ cur.curr().get("nombre") + " | APELLIDOS: " + cur.curr().get("apellidos")
+							+ " | COD_CURSO: " + cur.curr().get("cod_curso"));
+				}
+			}
+			dni = consultarAlumno();
+		}
+		/**
+		 * añadimos un nuevo documento a la colección calificaciones con los datos
+		 * anteriormente introducidos
+		 */
+		System.out.print("\nIntroduce la nota: ");
+		int nota = sc.nextInt();
+		coleccion = mongo.abrirColeccion("calificaciones");
+		documento.put("cod_asig", cod);
+		documento.put("dni", dni);
+		documento.put("calificacion", nota);
+		coleccion.insert(documento);
+		documento.clear();
+		cur = coleccion.find();
+		/** imprimir documentos */
+		while (cur.hasNext()) {
+			System.out.println("\t\t--> COD_ASIG: " + cur.next().get("cod_asig") + " | DNI: " + cur.curr().get("dni")
+					+ " | CALIFICACION: " + cur.curr().get("calificacion"));
+		}
+	}
+}
