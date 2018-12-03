@@ -1,0 +1,90 @@
+package pevalMongo;
+
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.MongoClient;
+
+/**
+ * Clase MongoConexion, donde se establecen los métodos y los atributos
+ * necesarios para realizar una conexión con MongoDB y atacar la base de datos,
+ * así como sus colecciones y documentos
+ * 
+ * @author Jesús Romero González
+ * @version 01/12/2018
+ */
+public class MongoConexion {
+	/** mongo <MongoClient> */
+	private MongoClient mongo;
+	/** collection <DBCollection> coleccion para las BD */
+	private DBCollection collection;
+	/** db <BD> base de datos de MongoDB */
+	private DB db;
+
+	/**
+	 * Constructor, donde realizamos la conexión con MongoDB
+	 * 
+	 * @param url    <String> url de conexión
+	 * @param puerto <String> puerto de conexión
+	 */
+	public MongoConexion(String url, int puerto) {
+		try {
+			/* Conexión al servidor MongoDB */
+			mongo = new MongoClient(url, puerto);
+			System.out.println("\t**CONEXION ESTABLECIDA CON " + url.toUpperCase() + "**\n");
+		} catch (Exception e) {
+			System.out.println("\t**ERROR CONEXION MONGO**");
+		}
+	}
+
+	/**
+	 * Método abrirMongo, donde creamos | abrimos la base de datos (si no existe la
+	 * crea)
+	 * 
+	 * @param nombreDB <String> nombre de la db
+	 * @return db <DB>
+	 */
+	public DB abrirMongo(String nombreDB) {
+		db = mongo.getDB(nombreDB);
+		System.out.println("\t**DB: " + nombreDB.toUpperCase() + " CREADA**\n");
+		return db;
+	}
+
+	/**
+	 * Método abrirColeccion, donde abrimos una coleccion (si no existe la crea)
+	 * 
+	 * @param coleccion <String> nombre de la colección
+	 * @return collection <DBCollection>
+	 */
+	public DBCollection abrirColeccion(String coleccion) {
+		collection = db.getCollection(coleccion);
+		System.out.println("\n\t**COLECCION: " + coleccion.toUpperCase() + " CREADA**");
+		return collection;
+	}
+
+	/**
+	 * Método getMongo
+	 * 
+	 * @return mongo <MongoClient>
+	 */
+	public MongoClient getMongo() {
+		return mongo;
+	}
+
+	/**
+	 * Método getDb
+	 * 
+	 * @return db <DB>
+	 */
+	public DB getDb() {
+		return db;
+	}
+
+	/**
+	 * Método getCollection
+	 * 
+	 * @return collection <DBCollection>
+	 */
+	public DBCollection getCollection() {
+		return collection;
+	}
+}
