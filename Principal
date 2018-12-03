@@ -1,0 +1,53 @@
+package pevalMongo;
+
+/**
+ * Clase Principal, donde creamos una conexión con MongoDB, creamos una DB,
+ * generamos colecciones y llamamos a los método de la clase MongoOperaciones
+ * 
+ * @author Jesús Romero Gonzalez
+ * @version 01/12/2018
+ * @see MongoConexion
+ * @see MongoOperaciones
+ */
+public class Principal {
+	/** mongoC <MongoConexion> */
+	private static MongoConexion mongoC;
+	/** mongoO <MongoOperaciones> */
+	private static MongoOperaciones mongoO;
+
+	/**
+	 * Método main
+	 * 
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		/** nueva conexión con MongoDB */
+		mongoC = new MongoConexion("localhost", 27017);
+		/** creación de la db */
+		mongoC.abrirMongo("romerogonzalez");
+		/** instancia de la clase MongoOperaciones */
+		mongoO = new MongoOperaciones(mongoC);
+		/** creación de las colecciones */
+		mongoO.cargarColecciones();
+
+		/** llamada al menú de la clase MongoOperaciones */
+		String opcion = mongoO.menu();
+		while (!opcion.equals("0")) {
+			switch (opcion) {
+			case "1":
+				mongoO.introducirCalificación();
+				break;
+			case "2":
+				mongoO.busquedaAsignatura();
+				break;
+			case "3":
+				mongoO.actualizarRegistros();
+				break;
+			case "4":
+				mongoO.borrarRegistros();
+				break;
+			}
+			opcion = mongoO.menu();
+		}
+	}
+}
